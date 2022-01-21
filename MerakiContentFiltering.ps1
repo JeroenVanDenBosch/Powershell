@@ -41,7 +41,7 @@ $ContentFilter.blockedUrlCategories = $ContentFilter.blockedUrlCategories.id
 
 $jsonPayload = ($ContentFilter | ConvertTo-Json)
 
-# Test on one location/network
+# Test on one location/network. Note the different link for POST requests.
 Invoke-RestMethod -Method Put -Uri "https://n170.meraki.com/api/v1/networks/$network0/appliance/contentFiltering" -Headers $Headers -Body $jsonPayload
 
 #All locations
