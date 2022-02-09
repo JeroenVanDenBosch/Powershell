@@ -1,0 +1,144 @@
+# Excel initiëren
+$Excel = New-Object -ComObject excel.application # $Excel.Visible = $True 
+
+# Opvragen directories en opvragen bijbehorende rechten.
+$ListingDirs = Get-ChildItem -path G:\ -depth 12 | Where-Object {($_.attributes -eq 'Directory')} 
+$ListingDirsSorted = $ListingDirs | Sort-Object -Property PSPath
+$ListingDirectoryRights = $ListingDirsSorted | Get-Acl 
+
+# Werkboek aanmaken
+$Workbook = $excel.Workbooks.Add()
+
+foreach ($Dir in $ListingDirectoryRights) { # Begin lus 1
+    if (($dir.Path -replace 'Microsoft.PowerShell.Core\\FileSystem::G:','') -like '\[A-Za-z0-9\.& \s_()]*\*') { #Regex needs some work for some exeptions it doesn't capture
+        $DirPath = ($Dir.path -replace 'Microsoft.PowerShell.Core\\FileSystem::G:\\','') # Replace G with your driveletter
+        $Sheet.Cells.Item($row,$ColumnDir)= $DirPath
+        if ($DirPath.length -ge 200) { # Kleurt rood als er meer dan 200 karakters in het pad staan (maximum is 256 karakters)
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.Color = 255
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.ColorIndex = 3                   
+                    }
+                    else {
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.Color = 5287936
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.ColorIndex = 14
+                    }
+            
+            foreach ($DA in $Dir.access) {
+            if ($DA.accesscontroltype -eq 'Deny') {
+                $row++
+                $Sheet.Cells.Item($row,$ColumnRights) = $DA.FileSystemRights.tostring()
+                $Sheet.Cells.Item($row,$ColumnRights).Font.Color = 255
+                $Sheet.Cells.Item($row,$ColumnRights).Font.ColorIndex = 3
+                $Sheet.Cells.Item($row,$ColumnGroup) = $DA.IdentityReference.tostring()
+
+            }   
+            if ($DA.accesscontroltype -eq 'Allow'){
+                
+                if (  
+                ($DA.IdentityReference.tostring() -eq "BUILTIN\Administrators") -or 
+                ($DA.IdentityReference.tostring() -eq "NT AUTHORITY\SYSTEM") -or 
+                ($DA.IdentityReference.tostring() -eq "CREATOR OWNER") -or
+                ($DA.IdentityReference.tostring() -eq "INGEBOUWD\Administrators") -or 
+                ($DA.IdentityReference.tostring() -eq "NT AUTHORITY\SYSTEM") -or 
+                ($DA.IdentityReference.tostring() -eq "MAKER EIGENAAR")
+
+
+
+                ) {
+                    Out-Null
+                    }
+                else {
+                    $row++
+                    $Sheet.Cells.Item($row,$ColumnRights) = $DA.FileSystemRights.tostring()
+                    $Sheet.Cells.Item($row,$ColumnGroup) = $DA.IdentityReference.tostring()
+                    if (($DA.IdentityReference.tostring() -eq "BUILTIN\Users") -or ($DA.IdentityReference.tostring() -eq "INGEBOUWD\Users")) {
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.Color = 255
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.ColorIndex = 3}
+                    else {
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.Color = 5287936
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.ColorIndex = 14}
+                    }
+                }
+        }
+    $dataRange = $Sheet.Range(("A{0}" -f $initialrow),("C{0}"  -f $row))     
+    7..10 | foreach {
+    $dataRange.Borders.Item($_).LineStyle = 1
+    $dataRange.Borders.Item($_).Weight = 2 
+    }
+    $row++
+    $initialrow = $row
+    
+    $dataRange = $Sheet.Range(("B{0}" -f 2),("B{0}"  -f $row))     
+    $dataRange.Borders.Item(7).LineStyle = 1
+    $dataRange.Borders.Item(7).Weight = 2 
+    $dataRange.Borders.Item(10).LineStyle = 1
+    $dataRange.Borders.Item(10).Weight = 2 
+    $datarange.HorizontalAlignment = -4131
+
+    $usedRange = $Sheet.UsedRange	
+    $usedRange.EntireColumn.AutoFit() | Out-Null
+    }
+
+    else {
+    
+    # Vullen Excel sheet en stijl opmaak.
+    $Sheet = $workbook.Worksheets.Item(1)
+    $DirName = ($dir.Path -replace 'Microsoft.PowerShell.Core\\FileSystem::G:\\','') # $DirName = "sheet2b"
+    $Sheet.Name = "$DirName"
+    $Sheet.Activate() | Out-Null
+    $row = 1
+    $column = 1
+    $Sheet.Cells.Item($row,$column) = 'Pad'
+    $Sheet.Cells.Item($row,$column).Interior.ColorIndex = 15
+    $Sheet.Cells.Item($row,$column).Font.Bold = $True
+    $Column++
+    $Sheet.Cells.Item($row,$column) = 'Rechten'
+    $Sheet.Cells.Item($row,$column).Interior.ColorIndex = 15
+    $Sheet.Cells.Item($row,$column).Font.Bold = $True
+    $Column++
+    $Sheet.Cells.Item($row,$column) = 'Groep of Gebruiker'
+    $Sheet.Cells.Item($row,$column).Interior.ColorIndex = 15
+    $Sheet.Cells.Item($row,$column).Font.Bold = $True
+    $initialrow = 1
+    $dataRange = $Sheet.Range(("A{0}" -f $initialrow),("C{0}" -f $row)) 
+    $initialrow++ 
+    7..12 | foreach {
+        $dataRange.Borders.Item($_).LineStyle = 1
+        $dataRange.Borders.Item($_).Weight = 2 
+    }
+    $excel.Rows.Item("2:2").Select()
+    $excel.ActiveWindow.FreezePanes = $true
+    $row = 2
+    $ColumnDir = 1
+    $ColumnRights = 2
+    $ColumnGroup =3
+    
+    $DirPath = ($Dir.path -replace 'Microsoft.PowerShell.Core\\FileSystem::G:\\','')
+    $Sheet.Cells.Item($row,$ColumnDir)= $DirPath
+    if ($DirPath.length -ge 200) { # Kleurt rood als er meer dan 200 karakters in het pad staan (maximum is 256 karakters)
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.Color = 255
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.ColorIndex = 3                   
+                    }
+                    else {
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.Color = 5287936
+                    $Sheet.Cells.Item($row,$ColumnGroup).Font.ColorIndex = 14
+                    }
+    $workbook.Worksheets.add().after 
+    }
+   
+  
+} # Eind lus 1
+
+# Opschoning
+$Sheet = $workbook.Worksheets.Item(1)
+$Sheet.Delete()
+
+#saven
+$date = get-date
+$FriendlyDate = ($date.Year.tostring()) + ($date.Month.tostring()) + ($date.Day.tostring()) + ($date.hour.tostring()) + ($date.Minute.tostring())
+$FileName = "G:\ICT\Rapportages\Rechten_G_"+ $FriendlyDate
+$workbook.SaveAs($FileName,51) # http://msdn.microsoft.com/en-us/library/bb241279.aspx 
+$workbook.Saved = $true
+$workbook.Close()
+
+
+
