@@ -1,0 +1,23 @@
+# Possible connections for administration of Teams 
+# The ways to install these are not listed but usually consist of install-module [name] and import-module [name]
+
+# 1. Teams module
+connect-microsoftteams
+
+# 2. Exchange module since some groups used for Teams and Tenant are managed with cmdlets within Exchange module
+Connect-ExchangeOnline
+
+# 3. Sharepoint module since Teams uses sharepoint for it's Teams libraries.
+Connect-SPOService -url https://[yourdomain]-admin.sharepoint.com
+
+# 4. Connects to the Azure AD and allows PnP PowerShell to access both SharePoint and the Microsoft Graph
+#    For more info: https://pnp.github.io/powershell/index.html 
+connect-pnponline -Url https://[yourdomain]-admin.sharepoint.com -Interactive
+
+# MS Graph module
+Connect-MgGraph -Scopes "User.Read.All", "Group.ReadWrite.All, Reports.Read.All, GroupMember.Read.All, Sites.Read.All, Team.ReadBasic.All, TeamSettings.Read.All"
+# Sometimes a change of profile is needed depending on wether wich version of the API is installed (v1.0 or beta). Change if you get an error like 'request API is not supported'. 
+Select-MgProfile -Name "beta"
+
+# Azure AD module
+Connect-AzureAD
