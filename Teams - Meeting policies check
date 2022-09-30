@@ -1,0 +1,117 @@
+Connect-MicrosoftTeams
+
+#############################################
+### 10.2 Vergaderingen (meeting policies) ###
+#############################################
+
+# Het betreft hier de zogenaamde 'meeting policies'. De settings die worden weergegeven zijn de global settings, dat de standaard is (LET OP: Laat je niet van de wijs brengen dat er ook een default policy is). 
+# Naast Global zijn er de volgende meeting policies te kiezen: AllOn, RestrictedAnonymousAccess, AllOff, RestrictedAnonymousNoRecording, Default, Kiosk   
+
+# Opvragen standaard meeting policies
+Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global
+
+# Indien een setting aangepast moet worden doe je dit met
+Set-CsTeamsMeetingPolicy -Identity Global -[property] [$true or $False or value]
+
+##############
+## Algemeen ##
+##############
+
+# Nu vergaderen in kanalen toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowMeetNow # Komt overeen met waarde in governance document
+
+# Outlook-invoegtoepassing toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowOutlookAddIn # Komt overeen met waarde in governance document
+
+#Planning van kanaalvergadering toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowChannelMeetingScheduling # Komt overeen met waarde in governance document
+
+# Plannen van privévergaderingen toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowPrivateMeetNow # Komt overeen met waarde in governance document
+
+####################
+## Audio en video ##
+####################
+
+# Transcriptie/vertaling toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowTranscription # Komt overeen met waarde in governance document             
+
+# Cloudopnamen toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowCloudRecording # Komt overeen met waarde in governance document
+
+# IP-video toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowIPAudio # Komt overeen met waarde in governance document 
+
+# Bitsnelheid voor media (kB)
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).MediaBitRateKb # Komt overeen met waarde in governance document
+
+##################
+## Inhoud delen ##
+##################
+
+# Modus scherm delen
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).ScreenSharingMode # Komt overeen met waarde in governance document
+
+# Deelnemer toestaan om controle te geven of te vragen
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowParticipantGiveRequestControl # Komt overeen met waarde in governance document
+
+# Externe deelnemer toestaan om controle te geven of te vragen
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowExternalParticipantGiveRequestControl # Komt overeen met waarde in governance document
+
+# PowerPoint delen toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowPowerPointSharing # Komt overeen met waarde in governance document
+
+# Whiteboard toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowWhiteboard # Komt overeen met waarde in governance document
+
+# Gedeelde notities toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowSharedNotes # Komt overeen met waarde in governance document
+
+##########################
+## Deelnemers en gasten ##
+##########################
+
+# Met de instellingen voor deelnemers en gasten kunt u de toegang tot Teams-vergaderingen beheren voor personen die inbellen via een telefoon.
+
+# Anonieme personen toestaan om een vergadering te starten
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowAnonymousUsersToStartMeeting # Komt overeen met waarde in governance document
+
+# Rollen met presentatorrechten in vergaderingen
+# Default staat deze op EveryoneUserOverride (iedereen) in dat ook niet gasten dit kunnen. De waarde EveryoneInCompanyUserOverride bepaalt dat alleen medewerkers en gasten (toegevoegd in het domein) dit kunnen. 
+# Als je het nog restrictiever wilt dan is alleen de meeting organizer de presenter maar kan deze rol niet worden overgedragen als de meeting organizer er niet bij is.
+ 
+Set-CsTeamsMeetingPolicy -Identity Global -DesignatedPresenterRoleMode EveryoneInCompanyUserOverride
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).DesignatedPresenterRoleMode # Komt het dichste overeen met waarde in governance document
+
+# Anonieme personen toestaan om een vergadering te starten
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowAnonymousUsersToStartMeeting # Komt overeen met waarde in governance document
+
+# Rollen met presentatorrechten in vergaderingen
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowParticipantGiveRequestControl # Komt overeen met waarde in governance document
+
+# Personen automatisch toelaten
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AutoAdmittedUsers # Komt overeen met voetnoot dat 'EveryoneInCompany' naast medewerkers ook gasten zijn maar geen externen
+
+# Inbelgebruikers toestaan om de lobby over te slaan
+# Komt overeen met waarde in governance document (Bij Personen automatisch toelaten is 'EveryoneInCompany' ingesteld wat betekend dat gasten wel en inbelgebruikers of externen niet de lobby mogen overslaan.
+
+# Nu vergaderen in privé chats toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowBreakoutRooms # Komt overeen met waarde in governance document
+
+# Liveondertitels inschakelen
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).LiveCaptionsEnabledType # Komt overeen met waarde in governance document
+
+# Chatten in vergaderingen toestaan
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).MeetingChatEnabledType # Komt overeen met waarde in governance document
+
+##########################
+## Vergaderinstellingen ##
+##########################
+
+# Vergaderingsinstellingen worden gebruikt om te bepalen of anonieme personen kunnen deelnemen aan Teams-vergaderingen en welke inhoud wordt opgenomen in de uitnodigingen voor vergaderingen.
+
+# Anonieme gebruikers kunnen aan een vergadering deelnemen
+(Get-CsTeamsMeetingPolicy | Where-Object -Property identity -EQ Global).AllowAnonymousUsersToJoinMeeting # Komt overeen met waarde in governance document     
+
+
+
