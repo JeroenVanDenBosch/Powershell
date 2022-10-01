@@ -1,0 +1,10 @@
+
+Connect-MicrosoftTeams
+
+# Displaynaam kom je meestal tegen in de rapportages als naam van het team dus zoek daar op.
+Get-Team -DisplayName '...' #d0999...-....-4e5.-b.0.-b.ecb.869.2f
+
+# Controle
+Get-TeamUser -GroupId d0999...-....-4e5.-b.0.-b.ecb.869.2f
+Add-TeamUser -GroupId d0999...-....-4e5.-b.0.-b.ecb.869.2f -User [username@domain.com] -Role Owner
+
