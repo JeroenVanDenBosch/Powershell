@@ -1,0 +1,119 @@
+
+Connect-MicrosoftTeams
+Connect-AzureAD
+
+###########################
+### 13 Hele organisatie ###
+###########################
+
+#####################
+## Externe toegang ##
+#####################
+
+# https://learn.microsoft.com/en-us/microsoftteams/teams-skype-interop#using-powershell
+
+# Gebruikers kunnen communiceren met andere Skype voor Bedrijven- en Teams-gebruikers aan 
+(Get-CsExternalAccessPolicy |  Where-Object -Property identity -EQ Global).EnablePublicCloudAccess # Conform governance document
+
+# Gebruikers kunnen communiceren met Skype-gebruikers
+(Get-CsTeamsClientConfiguration).AllowSkypeBusinessInterop # Conform governance document # LET OP: Get-CsTenantPublicProvider cmdlet die hiervoor was binnen de SkypeForBUsiness module lijkt uitgefaseerd met incorperen Skype cmdlets in Teams module.
+
+#########################
+## Toegang voor gasten ##
+#########################
+
+# Toegang voor gasten in Teams toestaan aan
+(Get-CsTeamsClientConfiguration).AllowGuestUser # Conform governance document 
+
+# Belfuncties voor gastgebruikers beheren: Privégesprekken voeren
+Get-CsTeamsGuestCallingConfiguration # Conform governance document
+
+# Vergadering: IP-video toestaan aan
+(Get-CsTeamsGuestMeetingConfiguration | Where-Object -Property identity -EQ Global).AllowIPVideo # Conform governance document  
+
+# Vergadering: Modus scherm delen aan
+(Get-CsTeamsGuestMeetingConfiguration | Where-Object -Property identity -EQ Global).ScreenSharingMode # Conform governance document 
+
+# Vergadering: nu vergaderen toestaan 
+(Get-CsTeamsGuestMeetingConfiguration | Where-Object -Property identity -EQ Global).AllowMeetNow # Conform governance document                           
+
+# Berichten: Verzonden berichten bewerken
+(Get-CsTeamsGuestMessagingConfiguration | Where-Object -Property identity -EQ Global).AllowUserEditMessage  # Conform governance document 
+
+# Berichten: Verzonden berichten verwijderen
+(Get-CsTeamsGuestMessagingConfiguration | Where-Object -Property identity -EQ Global).AllowUserDeleteMessage  # Conform governance document 
+
+# Berichten Chat
+(Get-CsTeamsGuestMessagingConfiguration | Where-Object -Property Identity -EQ Global).AllowUserChat  # Conform governance document 
+
+# Berichten: Giphy's gebruiken in gesprekken
+(Get-CsTeamsGuestMessagingConfiguration | Where-Object -Property Identity -EQ Global).AllowGiphy # Conform governance document 
+
+# Berichten: Inhoudsrestrictie voor giphy's
+(Get-CsTeamsGuestMessagingConfiguration | Where-Object -Property Identity -EQ Global).GiphyRatingType # Conform governance document 
+
+# Berichten: Memes gebruiken in gesprekken
+(Get-CsTeamsGuestMessagingConfiguration | Where-Object -Property Identity -EQ Global).AllowMemes # Conform governance document 
+
+# Berichten: Stickers gebruiken in gesprekken
+(Get-CsTeamsGuestMessagingConfiguration | Where-Object -Property Identity -EQ Global).AllowStickers # Conform governance document 
+
+# Berichten: Insluitende lezer voor het weergeven van berichten toestaan
+(Get-CsTeamsGuestMessagingConfiguration | Where-Object -Property Identity -EQ Global).AllowImmersiveReader # Conform governance document 
+
+########################
+## Teams instellingen ##
+########################
+
+# Voorgestelde feeds kunnen worden weergegeven in de activiteitsfeed van een gebruiker.
+# Deze is niet in te stellen met een cmdlet (inclusief cmdlets in de Graph module). Hiervoor uitgeweken naar https://admin.teams.microsoft.com/company-wide-settings/teams-settings.
+# Conform governance document 
+
+# Taggen: Taggen is ingeschakeld voor:
+(Get-CsTeamsTargetingPolicy).ManageTagsPermissionMode # Conform governance document 
+
+# Taggen: Teameigenaar kan overrulen wie labels kan toepassen
+(Get-CsTeamsTargetingPolicy).TeamOwnersEditWhoCanManageTagsMode # Conform governance document 
+
+# Taggen: Voorgestelde standaardtags
+(Get-CsTeamsTargetingPolicy).SuggestedPresetTags # Conform governance document
+
+# E-mailintegratie: Gebruikers toestaan om e-mailberichten te verzenden naar een e-mailadres van een kanaal (aan)
+(Get-CsTeamsClientConfiguration).AllowEmailIntoChannel # Conform governance document 
+
+# E-mailintegratie: Kanaal-e-mail van deze SMTP-domeinen accepteren
+(Get-CsTeamsClientConfiguration).RestrictedSenderList # nvt 
+
+# Bestanden: Citrix files
+# Set-CsTeamsClientConfiguration -[property] [waarde] -Identity Global
+Get-CsTeamsClientConfiguration | Select-Object -Property AllowShareFile # Conform governance document
+
+# Bestanden: DropBox
+Get-CsTeamsClientConfiguration | Select-Object -Property AllowDropBox # Conform governance document
+
+# Bestanden: Box
+Get-CsTeamsClientConfiguration | Select-Object -Property AllowBox # Conform governance document
+
+# Bestanden: Google Drive (uit)
+Get-CsTeamsClientConfiguration | Select-Object -Property AllowGoogleDrive # Conform governance document
+
+# Tabblad Organisatie weergeven in chats
+Get-CsTeamsClientConfiguration | Select-Object -Property AllowOrganizationTab # Conform governance document
+
+################################
+## Resterende niet in genoemd ##
+################################
+
+# Niet besproken standaards apps worden als standaard niet toegestaan. 
+Set-CsTeamsClientConfiguration -AllowEgnyte $False -Identity Global
+Get-CsTeamsClientConfiguration | Select-Object -Property AllowEgnyte
+
+# Logs voor troubleshooting staan uit maar kunnen op verzoek (in kader troubleshooting) aangezet worden. 
+Get-CsTeamsMediaLoggingPolicy | Select-Object -Property AllowMediaLogging
+
+# Uitzetten survey (Besproken met project team dd 20220926)
+Set-CsTeamsFeedbackPolicy -ReceiveSurveysMode Disabled | Where-Object -Property Identity -EQ Global 
+Get-CsTeamsFeedbackPolicy | Where-Object -Property Identity -EQ Global
+
+# Bestanden (hoeft niet te worden ingesteld voor legro)
+Get-CsTeamsFilesPolicy # gebruik sharepoint en onedrive opslag: NativeFileEntryPoints : Enabled en optie om het tabblad files te disablen
