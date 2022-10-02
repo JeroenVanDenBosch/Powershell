@@ -1,1 +1,18 @@
+####### Aanzetten sensitiviy labels #######
+# https://learn.microsoft.com/en-us/azure/active-directory/enterprise-users/groups-assign-sensitivity-labels
+$settings = Get-AzureADDirectorySetting | Where-Object -Property templateid -like "62375ab9-6b52-47ed-826b-58e47e0e304b"
+$settings.values
+$Settings["EnableMIPLabels"] = "True"
+set-AzureADDirectorySetting -Id 62375ab9-6b52-47ed-826b-58e47e0e304b -DirectorySetting $settings
+
+# Sensitiviteitslabels worden via het beheer portal aangemaakt.
+<# 
+https://learn.microsoft.com/en-us/microsoft-365/compliance/create-sensitivity-labels?view=o365-worldwide#create-and-configure-sensitivity-labels
+
+Create and configure sensitivity labels
+1. From the Microsoft Purview compliance portal (https://compliance.microsoft.com/), select Solutions > Information protection > Labels.
+2. Nieuw label aanmaken - scope (alleen) groups&sites
+3. items leeg
+4. Define protection settings for groups and sites (kies)
+#>
 
