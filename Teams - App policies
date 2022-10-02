@@ -25,7 +25,7 @@ This setting determines if a user can upload a custom app package in the Teams a
 # Microsoft requires that all creation and modification of app setup polices (not including the assignment or removal of policies from users) happens in the Microsoft Teams & Skype for Business Admin Center to ensure that the policy matches your expectations for the end user experience.
 (Get-CsTeamsAppSetupPolicy | Where-Object -Property Identity -EQ Global).AllowUserPinning
 
-#Vastgemaakt Apps (conform governance document)
+#Vastgemaakte Apps (conform governance document)
 # https://admin.teams.microsoft.com/policies/app-setup/edit/R2xvYmFs -> App setup policies\Global
 Get-TeamsApp | Where-Object -Property Id -In ((Get-CsTeamsAppSetupPolicy | Where-Object -Property Identity -EQ Global).PinnedAppBarApps).Id | Select-Object Displayname, Id
 
