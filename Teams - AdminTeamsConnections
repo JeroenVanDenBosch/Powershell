@@ -1,5 +1,6 @@
 # Possible connections for administration of Teams 
 # The ways to install these are not listed but usually consist of install-module [name] and import-module [name]
+# https://www.powershellgallery.com/packages/MicrosoftTeams/[version number] (as module commands give error -> check wether they actually exist and are not leftover depreciated or whatever)
 
 ### Teams module ###
 connect-microsoftteams
