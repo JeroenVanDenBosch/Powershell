@@ -1,0 +1,63 @@
+
+
+####################################
+## Berichten (messaging policies) ##
+####################################
+
+
+# Powershell: Connect-MicrosoftTeams
+# Beheer portaal: https://admin.teams.microsoft.com/policies/messaging/edit/R2xvYmFs -> Messaging policies\Global (Org-wide default)
+
+
+# Eigenaren kunnen verzonden berichten verwijderen
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowOwnerDeleteMessage # Conform governance document
+
+# Gebruikers kunnen verzonden berichten verwijderen
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowUserDeleteMessage # Conform governance document
+
+# Gebruikers kunnen verzonden berichten bewerken
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowUserEditMessage # Conform governance document
+
+# Leesbevestigingen
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).ReadReceiptsEnabledType # Conform governance document
+
+# Chat
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowUserChat # Conform governance document
+
+# Giphy's gebruiken in gesprekken
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowGiphy # Conform governance document
+
+# Inhoudsrestrictie voor giphy's
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).GiphyRatingType # Conform governance document
+
+# Memes gebruiken in gesprekken
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowMemes # Conform governance document
+
+# Stickers gebruiken in gesprekken
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowStickers # Conform governance document
+
+#Voorbeelden van URL toestaan
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowUrlPreviews # Conform governance document
+
+# Berichten vertalen
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowUserTranslation # Conform governance document
+# Set-CsTeamsMessagingPolicy -AllowUserTranslation $False | Where-Object -Property Identity -EQ Global
+
+# Insluitende lezer voor het weergeven van berichten toestaan 
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowImmersiveReader # Conform governance document
+
+# Dringende berichten verzenden met behulp van prioriteitsmeldingen
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowPriorityMessages # Conform governance document
+
+# Spraakberichten maken (exclusief voor de mobile App)
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AudioMessageEnabledType # Conform governance document
+
+# Uw favoriete kanalen op mobiele apparaten weergeven boven recente chats 
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).ChannelsInChatListEnabledType # Conform governance document onder voorbehoud dat meest restrictief DisabledUserOverride is en een Disabled zonder user override niet aanwezig is.
+
+# Gebruikers laten verwijderen uit groeps-chats	
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowRemoveUser
+# Set-CsTeamsMessagingPolicy -AllowRemoveUser $False | Where-Object -Property Identity -EQ Global
+
+# Toevoeging op governance document - suggested replies (uitgezet)
+(Get-CsTeamsMessagingPolicy | Where-Object -Property Identity -EQ Global).AllowSmartReply
