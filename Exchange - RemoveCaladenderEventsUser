@@ -1,0 +1,6 @@
+# Use if User isn't able (sickness, account disabled or deleted, etc) to delete certain calander events.
+
+Conect-Exchange
+
+# Attention: CmdLet uses US date notation regardless of country settings!
+Remove-CalendarEvents -identity [user] -cancelorganizedmeetings -querystartdate 10/10/2021 -querywindowindays 720
